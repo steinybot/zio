@@ -1531,6 +1531,9 @@ sealed trait ZIO[-R, +E, +A] extends Serializable with ZIOPlatformSpecific[R, E,
   final def repeatWhileM[R1 <: R](f: A => URIO[R1, Boolean]): ZIO[R1, E, A] =
     repeatUntilM(e => f(e).map(!_))
 
+  final def requireService[R1 <: R]: ZIO[Has[R1], E, A] =
+    ZIO.accessM(r0 => self.provide(r0.get))
+
   /**
    * Retries with the specified retry policy.
    * Retries are done following the failure of the original `io` (up to a fixed maximum with
